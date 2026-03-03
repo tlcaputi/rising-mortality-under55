@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.DS_Store
+.CHANGELOG/
+.DEEP-VALIDATION/
+replication_1/
+replication_2/
+replication_3/
+data/raw/checkpoint.json
+*.aux
+*.log
+output/charts/
+output/*_compressed.png
+output/*_audit*.png
+output/*_page*.png
+CLAUDE.md

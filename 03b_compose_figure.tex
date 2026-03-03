@@ -1,0 +1,138 @@
+\documentclass[border=0pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{calc}
+
+% ── Colours ──────────────────────────────────────────────────────────────
+\definecolor{cblue}{HTML}{1A5276}
+\definecolor{cred}{HTML}{C0392B}
+\definecolor{cgray}{HTML}{666666}
+\definecolor{clight}{HTML}{E8F0F5}
+
+% ── Numbers from Python ──────────────────────────────────────────────────
+\input{output/charts/numbers.tex}
+
+\begin{document}
+\begin{tikzpicture}
+
+% ── Page dimensions ──────────────────────────────────────────────────────
+% Chart aspect: figsize=(7.5, 4.5) → ratio 0.6 → at 12.5cm w, h=7.5cm
+% Title ~1.2cm → total panel ~8.7cm; two rows + gap = ~19.4cm
+\def\pageW{28}      % cm
+\def\pageH{29}      % cm
+\def\panelW{12.5}   % cm — each panel width
+\def\gapH{1.0}      % cm — horizontal gap between columns
+\def\gapV{1.2}      % cm — vertical gap between rows
+\def\titleH{1.2}    % cm — space for 2-line title above chart
+
+% Derived positions
+\pgfmathsetmacro{\leftX}{(\pageW - 2*\panelW - \gapH)/2}
+\pgfmathsetmacro{\rightX}{\leftX + \panelW + \gapH}
+% Chart height from aspect ratio: 12.5 * 4.5/7.5 = 7.5cm
+\pgfmathsetmacro{\chartH}{12.5 * 4.5 / 7.5}
+\pgfmathsetmacro{\panelH}{\chartH + \titleH}
+\pgfmathsetmacro{\topY}{\pageH - 4.2}
+\pgfmathsetmacro{\botY}{\topY - \panelH - \gapV}
+
+% ── White background ─────────────────────────────────────────────────────
+\fill[white] (0, 0) rectangle (\pageW, \pageH);
+
+% ── Headline ─────────────────────────────────────────────────────────────
+\node[anchor=north, text width=26cm, align=center] at (\pageW/2, \pageH - 0.5) {%
+  {\fontsize{24}{29}\selectfont\bfseries\itshape\color{cred}%
+  \textquotedblleft More Americans Under 55 Are Dying of Severe Heart Attacks\textquotedblright}%
+};
+\node[anchor=north, text width=26cm, align=center] at (\pageW/2, \pageH - 2.4) {%
+  {\fontsize{16}{20}\selectfont\color{cgray}%
+  Wall Street Journal, February 20, 2026}%
+};
+
+% ── Top-left: Text box ──────────────────────────────────────────────────
+\pgfmathsetmacro{\tboxH}{\panelH}  % match total panel height exactly
+\node[anchor=north west] at (\leftX, \topY) {%
+  \begin{tcolorbox}[
+    enhanced,
+    width=\panelW cm,
+    height=\tboxH cm,
+    valign=center,
+    colback=clight,
+    colframe=cblue,
+    boxrule=1.2pt,
+    arc=4pt,
+    left=8mm, right=8mm, top=8mm, bottom=8mm,
+    fontupper=\fontsize{14}{19}\selectfont
+  ]
+  \textbf{The WSJ headline (Feb.\ 20, 2026) states ``more Americans under 55 are dying of severe heart attacks.''}
+
+  \medskip
+
+  The underlying study (top right) reports that in-hospital case fatality among hospitalized STEMI patients rose from 2.1\% to 3.3\% (2011--2022). This measure covers patients who presented to a hospital.
+
+  \medskip
+
+  \textbf{CDC WONDER population-level data (below) shows that over the same period, heart attack deaths fell \pctDeaths\% (bottom left) and the death rate fell \pctRate\% (bottom right).}
+  \end{tcolorbox}%
+};
+
+% ── Top-right: STEMI CFR chart ──────────────────────────────────────────
+\node[anchor=north west] at (\rightX, \topY) {%
+  \begin{minipage}{\panelW cm}
+    {\fontsize{14}{17}\selectfont\bfseries Satish et al.\ (2026): In-Hospital STEMI\\Case Fatality, Ages 18--54}\\[6pt]
+    \includegraphics[width=\panelW cm]%
+      {output/charts/stemi_cfr.pdf}
+  \end{minipage}%
+};
+
+% ── Bottom-left: MI Deaths chart ────────────────────────────────────────
+\node[anchor=north west] at (\leftX, \botY) {%
+  \begin{minipage}{\panelW cm}
+    {\fontsize{14}{17}\selectfont\bfseries CDC WONDER: Heart Attack Deaths\\per Year, Ages 15--54, 2011--2022}\\[6pt]
+    \includegraphics[width=\panelW cm]%
+      {output/charts/mi_deaths.pdf}
+  \end{minipage}%
+};
+
+% ── Bottom-right: MI Rate chart ─────────────────────────────────────────
+\node[anchor=north west] at (\rightX, \botY) {%
+  \begin{minipage}{\panelW cm}
+    {\fontsize{14}{17}\selectfont\bfseries CDC WONDER: Heart Attack Death Rate\\per 100K, Ages 15--54, 2011--2022}\\[6pt]
+    \includegraphics[width=\panelW cm]%
+      {output/charts/mi_rate.pdf}
+  \end{minipage}%
+};
+
+% ── Takeaway box ─────────────────────────────────────────────────────────
+\pgfmathsetmacro{\takeawayW}{2*\panelW + \gapH}
+\pgfmathsetmacro{\takeawayY}{\botY - \panelH - 0.8}
+\node[anchor=north west] at (\leftX, \takeawayY) {%
+  \begin{tcolorbox}[
+    enhanced,
+    width=\takeawayW cm,
+    colback=clight,
+    colframe=cblue,
+    boxrule=1.2pt,
+    arc=4pt,
+    left=8mm, right=8mm, top=5mm, bottom=5mm,
+    fontupper=\fontsize{14}{19}\selectfont
+  ]
+  \textbf{Both these findings and the Satish findings can be true at the same time.} For example, if the overall population is healthier and fewer people are suffering from heart attacks, but only sicker patients are treated as inpatients, then population-level heart attack mortality declines while in-hospital case fatality rises.
+  \end{tcolorbox}%
+};
+
+% ── Footer ───────────────────────────────────────────────────────────────
+\node[anchor=south, text width=26cm, align=center] at (\pageW/2, 0.5) {%
+  {\fontsize{11}{14}\selectfont\color{cgray}%
+  Sources: CDC WONDER MCD (heart attack / ICD-10 I21--I22, ages 15--54, 2011--2022);
+  Satish et al., JAHA 2026;15:e046517 (NIS, 2011--2022)\\
+  WSJ article (archived): tinyurl.com/26gmhhmf~~\textbar~~Replication: github.com/tlcaputi/rising-mortality-under55}%
+};
+
+\end{tikzpicture}
+\end{document}
